@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CINEVERSE — Seu universo de filmes</title>
+<style>
+:root{--bg:#080711;--panel:#121020;--panel2:#19152b;--purple:#8b5cf6;--purple2:#a78bfa;--text:#f7f4ff;--muted:#aaa4bd;--line:#29233d}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 80% 0%,#241342 0,transparent 32%),var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+header{position:sticky;top:0;z-index:10;background:#090714ed;backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav{max-width:1200px;margin:auto;padding:15px 22px;display:flex;align-items:center;gap:25px}
+.logo{font-size:25px;font-weight:900;letter-spacing:1.5px;color:white;text-decoration:none}.logo span{color:var(--purple2)}
+nav{display:flex;gap:18px;flex:1}nav a{color:var(--muted);text-decoration:none;font-size:14px}nav a:hover,nav a.active{color:white}
+.search{background:#171326;border:1px solid var(--line);border-radius:25px;padding:10px 15px;color:white;width:210px;outline:none}
+main{max-width:1200px;margin:auto;padding:25px 22px 70px}
+.hero{min-height:300px;border:1px solid #443064;border-radius:22px;padding:42px;display:flex;align-items:center;background:linear-gradient(90deg,#100b20 0%,#17102bdf 50%,#17102b55 100%),url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1500') center/cover;overflow:hidden}
+.hero-content{max-width:570px}.eyebrow{color:#c4a8ff;text-transform:uppercase;letter-spacing:3px;font-size:11px;font-weight:bold}
+h1{font-size:clamp(36px,6vw,60px);margin:12px 0}.hero p{color:#d4cde2;line-height:1.6;max-width:490px}
+.primary,.secondary,.chip,.small-btn{border:0;border-radius:10px;padding:12px 18px;font-weight:bold}
+.primary{background:linear-gradient(135deg,#9b6cff,#6d35d8);color:white;box-shadow:0 8px 24px #7139d955}
+.secondary{background:#272039;color:white;border:1px solid #4a3c68}
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:15px;margin:35px 0 17px}
+h2{font-size:22px;margin:0}.muted{color:var(--muted);font-size:13px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 22px}
+.chip{background:#171326;border:1px solid var(--line);color:#c9c1d8;padding:9px 14px;font-size:13px}
+.chip.active,.chip:hover{background:#6d35d8;border-color:#9b6cff;color:white}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:19px}
+.movie{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;transition:.2s;cursor:pointer;position:relative}
+.movie:hover{transform:translateY(-5px);border-color:#8b5cf6;box-shadow:0 12px 28px #0008}
+.poster{width:100%;aspect-ratio:2/3;object-fit:cover;display:block;background:#211a34}
+.movie-info{padding:12px}.movie-title{font-weight:bold;font-size:14px;line-height:1.35;min-height:37px}.movie-meta{color:var(--muted);font-size:12px;margin-top:7px}
+.fav{position:absolute;top:9px;right:9px;background:#090714d9;color:white;border:1px solid #ffffff40;border-radius:50%;width:34px;height:34px;font-size:18px}
+.empty{padding:35px;text-align:center;color:var(--muted);background:var(--panel);border:1px dashed var(--line);border-radius:15px;grid-column:1/-1}
+footer{border-top:1px solid var(--line);padding:25px;text-align:center;color:var(--muted);font-size:12px}
+.modal{position:fixed;inset:0;background:#000c;z-index:30;display:none;align-items:center;justify-content:center;padding:18px}
+.modal.show{display:flex}.dialog{background:#110e1e;border:1px solid #45345f;border-radius:18px;max-width:850px;width:100%;max-height:92vh;overflow:auto;position:relative}
+.close{position:absolute;right:14px;top:12px;background:#211a34;color:white;border:0;border-radius:50%;width:36px;height:36px;font-size:22px;z-index:2}
+.details{display:grid;grid-template-columns:250px 1fr;gap:25px;padding:28px}.details img{width:100%;border-radius:12px;aspect-ratio:2/3;object-fit:cover}.details h2{font-size:29px;margin:10px 0}.details p{line-height:1.65;color:#c9c1d8}
+.player-wrap{padding:0 28px 28px}.player-wrap video{display:block;width:100%;aspect-ratio:16/9;max-height:430px;background:#080711;border:1px solid var(--line);border-radius:12px}.player-wrap:has(video){padding-top:28px}
+.admin{margin-top:45px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px}
+.admin h2{margin-bottom:8px}.notice{background:#241b39;border:1px solid #554078;color:#d8c8ff;padding:12px;border-radius:10px;font-size:13px;line-height:1.5;margin:15px 0}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field{display:flex;flex-direction:column;gap:7px}.field.full{grid-column:1/-1}.field label{font-size:12px;color:var(--muted)}
+.field input,.field select,.field textarea{background:#0b0914;border:1px solid var(--line);border-radius:9px;padding:11px;color:white;width:100%}.field textarea{min-height:90px;resize:vertical}
+.admin-list{margin-top:18px;display:grid;gap:8px}.admin-item{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px;background:#0c0a15;border:1px solid var(--line);border-radius:9px;font-size:13px}
+.upload-progress{width:100%;height:12px;accent-color:var(--purple2)}.upload-panel{margin-top:18px;padding:18px;border:1px solid var(--line);border-radius:12px;background:var(--panel2)}button:disabled,input:disabled,select:disabled,textarea:disabled{opacity:.6;cursor:wait}.catalog-status{min-height:20px;margin:12px 0}.small-btn{padding:8px 11px;background:#392044;color:#ffb8c5}
+@media(max-width:700px){.nav{flex-wrap:wrap;gap:13px}.logo{font-size:22px}nav{order:3;width:100%;overflow:auto;padding:4px 0}.search{margin-left:auto;width:160px}main{padding:18px 14px 50px}.hero{padding:27px;min-height:280px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.details{grid-template-columns:1fr;padding:22px}.details img{max-width:180px}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}}
+</style>
+</head>
+<body>
+<header>
+  <div class="nav">
+    <a class="logo" href="#">CINE<span>VERSE</span></a>
+    <nav>
+      <a class="active" href="#inicio">Início</a>
+      <a href="#catalogo">Filmes</a>
+      <a href="#catalogo">Séries</a>
+      <a href="#minha-lista" onclick="mostrarFavoritos(event)">Minha lista</a>
+      <a href="#adm">ADM</a>
+    </nav>
+    <input id="busca" class="search" type="search" placeholder="Buscar título..." oninput="renderizar()">
+  </div>
+</header>
+
+<main id="inicio">
+  <section class="hero">
+    <div class="hero-content">
+      <div class="eyebrow">Seu universo começa aqui</div>
+      <h1>Histórias que<br><span style="color:#b99aff">não têm limites.</span></h1>
+      <p>Explore filmes, descubra novas histórias e monte sua própria lista no CINEVERSE.</p>
+      <button class="primary" onclick="document.getElementById('catalogo').scrollIntoView({behavior:'smooth'})">EXPLORAR CATÁLOGO</button>
+    </div>
+  </section>
+
+  <section id="catalogo">
+    <div class="section-head">
+      <div><h2 id="catalogoTitulo">Destaques do CINEVERSE</h2><div class="muted">Escolha sua próxima história</div></div>
+      <span class="muted" id="contador"></span>
+    </div>
+    <div class="filters" id="filtros">
+      <button class="chip active" onclick="filtrar('Todos',this)">Todos</button>
+      <button class="chip" onclick="filtrar('Ação',this)">Ação</button>
+      <button class="chip" onclick="filtrar('Ficção',this)">Ficção</button>
+      <button class="chip" onclick="filtrar('Drama',this)">Drama</button>
+      <button class="chip" onclick="filtrar('Terror',this)">Terror</button>
+      <button class="chip" onclick="filtrar('Animação',this)">Animação</button>
+    </div>
+    <p id="catalogStatus" class="muted catalog-status" role="status" aria-live="polite">Carregando catálogo online…</p>
+    <button class="secondary" type="button" onclick="carregar()" id="atualizarCatalogo" style="margin-bottom:18px">ATUALIZAR CATÁLOGO</button>
+    <div class="grid" id="catalogoGrid"></div>
+  </section>
+
+  <section class="admin" id="adm">
+    <h2>Publicar um filme</h2>
+    <p class="muted">Envie o arquivo para que o filme apareça no catálogo e possa ser assistido por todos.</p>
+    <div class="notice">Catálogo colaborativo: qualquer visitante pode publicar ou excluir filmes. Envie apenas conteúdo que você tem autorização para compartilhar. Os vídeos aparecem depois que o envio termina. Filmes da versão local precisam ser enviados novamente.</div>
+    <form id="formFilme" onsubmit="adicionarFilme(event)">
+      <div class="form-grid">
+        <div class="field"><label for="titulo">Título</label><input id="titulo" required maxlength="90" placeholder="Nome do filme"></div>
+        <div class="field"><label for="ano">Ano</label><input id="ano" type="number" min="1888" max="2100" required placeholder="2026"></div>
+        <div class="field"><label for="genero">Gênero</label><select id="genero"><option>Ação</option><option>Ficção</option><option>Drama</option><option>Terror</option><option>Animação</option><option>Outro</option></select></div>
+        <div class="field"><label for="capa">Imagem da capa</label><input id="capa" type="file" accept="image/jpeg,image/png,image/webp,image/gif" aria-describedby="capaAjuda"><small class="muted" id="capaAjuda">JPG, PNG, WebP ou GIF de até 2 MB. Opcional.</small></div>
+        <div class="field full"><label for="descricao">Descrição</label><textarea id="descricao" required maxlength="700" placeholder="Escreva uma sinopse..."></textarea></div>
+        <div class="field full"><label for="video">Arquivo do filme</label><input id="video" required type="file" accept=".mp4,.mkv" aria-describedby="videoAjuda"><small id="videoAjuda" class="muted">MP4 ou MKV, de 100 MB a 30 GB (1 GB = 1 bilhão de bytes). O arquivo é enviado e fica disponível no catálogo para todos. Para melhor compatibilidade, use MP4 com vídeo H.264 e áudio AAC; MKV depende do navegador.</small></div>
+      </div>
+      <p style="margin:15px 0 0"><button class="primary" type="submit" id="publicarBotao">ENVIAR E PUBLICAR FILME</button></p>
+    </form>
+    <div id="uploadPainel" class="upload-panel" hidden>
+      <label for="uploadProgresso">Envio do filme <span id="uploadPercentual">0%</span></label>
+      <progress id="uploadProgresso" class="upload-progress" value="0" max="100">0%</progress>
+      <p class="muted">Mantenha esta página aberta até a publicação. Em caso de falha, tente novamente nesta página para continuar o envio.</p>
+      <button class="secondary" id="cancelarEnvio" type="button" onclick="cancelarEnvio()">CANCELAR ENVIO</button>
+    </div>
+    <p id="uploadMensagem" class="muted" role="status" aria-live="polite"></p>
+    <div class="admin-list" id="adminList"></div>
+  </section>
+</main>
+<footer> CINEVERSE © 2026 · Seu universo de filmes </footer>
+
+<div class="modal" id="modal" onclick="fecharFora(event)">
+  <div class="dialog">
+    <button class="close" onclick="fecharModal()" aria-label="Fechar">×</button>
+    <div id="detalhes"></div>
+  </div>
+</div>
+
+<script>
+const filmesIniciais = [
+ {id:'ex1',titulo:'Interestelar',ano:2014,genero:'Ficção',descricao:'Uma equipe de exploradores viaja para além desta galáxia em uma missão que pode definir o futuro da humanidade.',capa:'https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg'},
+ {id:'ex2',titulo:'A Origem',ano:2010,genero:'Ficção',descricao:'Um especialista em invadir sonhos recebe uma missão que desafia os limites entre realidade e imaginação.',capa:'https://image.tmdb.org/t/p/w500/9e3Dz7aCANy5aRUQF745IlNloJ1.jpg'},
+ {id:'ex3',titulo:'O Batman',ano:2022,genero:'Ação',descricao:'Em seu segundo ano de combate ao crime, Batman investiga uma sequência de mistérios em Gotham.',capa:'https://image.tmdb.org/t/p/w500/3VFI3zDl3hLiaVN9lU9S9h4V6aB.jpg'},
+ {id:'ex4',titulo:'Duna',ano:2021,genero:'Ficção',descricao:'Uma jornada épica em um planeta desértico, onde o destino de um povo está em jogo.',capa:'https://image.tmdb.org/t/p/w500/d5NXSklXo0qyIYkgV94XAgMIckC.jpg'},
+ {id:'ex5',titulo:'Invocação do Mal',ano:2013,genero:'Terror',descricao:'Investigadores paranormais ajudam uma família que enfrenta acontecimentos inexplicáveis em sua casa.',capa:'https://image.tmdb.org/t/p/w500/wVYREutTvI2tmxr6ujrHT704wGF.jpg'},
+ {id:'ex6',titulo:'Toy Story',ano:1995,genero:'Animação',descricao:'Brinquedos ganham vida quando os humanos não estão por perto e vivem aventuras inesquecíveis.',capa:'https://image.tmdb.org/t/p/w500/uXDfjJbdP4ijW5hWSBrPrlKpxab.jpg'},
+ {id:'ex7',titulo:'Oppenheimer',ano:2023,genero:'Drama',descricao:'A história do cientista J. Robert Oppenheimer e de um dos projetos científicos mais marcantes do século XX.',capa:'https://image.tmdb.org/t/p/w500/ptpr0kGAckfQkJeJIt8st5dglvd.jpg'},
+ {id:'ex8',titulo:'John Wick',ano:2014,genero:'Ação',descricao:'Um ex-assassino profissional é levado de volta ao mundo que tentou deixar para trás.',capa:'https://image.tmdb.org/t/p/w500/fZPSd91yGE9fCroQWMMQ9o2t2Oo.jpg'},
+ {id:'ex9',titulo:'Homem-Aranha: Através do Aranhaverso',ano:2023,genero:'Animação',descricao:'Miles Morales atravessa diferentes dimensões e encontra novas versões de heróis aracnídeos.',capa:'https://image.tmdb.org/t/p/w500/8Vt6mWEReuy4Of61Lnj5Xj908g8.jpg'},
+ {id:'ex10',titulo:'O Cavaleiro das Trevas',ano:2008,genero:'Ação',descricao:'Batman enfrenta um adversário que coloca Gotham diante de escolhas difíceis.',capa:'https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg'}
+];
+const chaveFav='cineverse_favoritos_v2';
+const videoMinimo=100*1000**2,videoMaximo=30*1000**3;
+let filmes=[...filmesIniciais],generoAtual='Todos',somenteFavoritos=false,videoAtual=null;
+let envioAtual=null,controleEnvio=null,carregandoCatalogo=false,cancelando=false;
+function validarVideo(file){
+ if(!/\.(mp4|mkv)$/i.test(file.name))return 'Selecione um arquivo MP4 ou MKV.';
+ if(file.size<videoMinimo||file.size>videoMaximo)return 'O vídeo deve ter entre 100 MB e 30 GB (inclusive).';
+ return '';
+}
+async function carregar(){
+ if(carregandoCatalogo)return;
+ carregandoCatalogo=true;
+ const status=document.getElementById('catalogStatus');
+ const botao=document.getElementById('atualizarCatalogo');botao.disabled=true;
+ status.textContent='Carregando catálogo online…';
+ try{
+  const data=await api('/api/catalog');
+  filmes=[...data.movies,...filmesIniciais];
+  status.textContent=data.movies.length?data.movies.length+' filme(s) publicado(s), disponíveis para todos.':'Nenhum filme publicado ainda. Os títulos abaixo são exemplos sem vídeo; publique o primeiro filme.';
+ }catch(erro){status.textContent='Não foi possível atualizar os filmes online. '+erro.message}
+ finally{carregandoCatalogo=false;botao.disabled=false;renderizar();renderizarAdmin()}
+}
+function favoritos(){try{return JSON.parse(localStorage.getItem(chaveFav)||'[]')}catch(e){return []}}
+function salvarFavoritos(lista){localStorage.setItem(chaveFav,JSON.stringify(lista))}
+function escapar(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function renderizar(){
+ const termo=document.getElementById('busca').value.toLowerCase().trim(),fav=favoritos();
+ let lista=filmes.filter(f=>(generoAtual==='Todos'||f.genero===generoAtual)&&(!somenteFavoritos||fav.includes(f.id))&&(f.titulo.toLowerCase().includes(termo)));
+ document.getElementById('catalogoTitulo').textContent=somenteFavoritos?'Minha lista':'Destaques do CINEVERSE';
+ document.getElementById('contador').textContent=lista.length+' título(s)';
+ const grid=document.getElementById('catalogoGrid');
+ if(!lista.length){grid.innerHTML='<div class="empty">Nenhum título encontrado. Tente outra busca ou categoria.</div>';return}
+ grid.innerHTML=lista.map(f=>`<article class="movie" onclick="abrirDetalhes('${f.id}')"><button class="fav" title="Favoritar" onclick="alternarFavorito(event,'${f.id}')">${fav.includes(f.id)?'♥':'♡'}</button><img class="poster" src="${escapar(f.capa||'')}" alt="Capa de ${escapar(f.titulo)}" onerror="this.onerror=null;this.src='https://placehold.co/400x600/171326/c9b7ff?text=CINEVERSE'"><div class="movie-info"><div class="movie-title">${escapar(f.titulo)}</div><div class="movie-meta">${escapar(f.ano)} · ${escapar(f.genero)}</div></div></article>`).join('');
+}
+function filtrar(g,botao){generoAtual=g;somenteFavoritos=false;document.querySelectorAll('.chip').forEach(b=>b.classList.remove('active'));botao.classList.add('active');renderizar()}
+function mostrarFavoritos(e){if(e)e.preventDefault();somenteFavoritos=true;generoAtual='Todos';document.querySelectorAll('.chip').forEach(b=>b.classList.toggle('active',b.textContent==='Todos'));renderizar();document.getElementById('catalogo').scrollIntoView({behavior:'smooth'})}
+function alternarFavorito(e,id){e.stopPropagation();let f=favoritos();f=f.includes(id)?f.filter(x=>x!==id):[...f,id];salvarFavoritos(f);renderizar()}
+function abrirDetalhes(id){
+ const f=filmes.find(x=>x.id===id);if(!f)return;
+ videoAtual=f.video||null;
+ document.getElementById('detalhes').innerHTML=`<div class="player-wrap" id="player"></div><div class="details"><img src="${escapar(f.capa||'https://placehold.co/400x600/171326/c9b7ff?text=CINEVERSE')}" alt="Capa" onerror="this.src='https://placehold.co/400x600/171326/c9b7ff?text=CINEVERSE'"><div><div class="eyebrow">CINEVERSE ORIGINAL CATALOG</div><h2>${escapar(f.titulo)}</h2><div class="muted">${escapar(f.ano)} · ${escapar(f.genero)}</div><p>${escapar(f.descricao)}</p>${videoAtual?'<button class="primary" onclick="tocarVideo()">▶ ASSISTIR</button>':'<p class="muted">Título de exemplo, ainda sem vídeo publicado.</p>'}</div></div>`;
+ document.getElementById('modal').classList.add('show');
+ if(videoAtual)tocarVideo();
+}
+function tocarVideo(){
+ if(!videoAtual)return;
+ const area=document.getElementById('player');
+ area.replaceChildren();
+ const video=document.createElement('video');
+ video.controls=true;video.playsInline=true;video.preload='metadata';
+ video.setAttribute('aria-label','Reprodutor do filme');
+ const status=document.createElement('p');status.className='muted';status.setAttribute('role','status');status.setAttribute('aria-live','polite');
+ status.textContent='Abrindo vídeo…';
+ video.addEventListener('error',()=>{status.textContent='Não foi possível reproduzir este arquivo. O navegador pode não suportar o formato ou os codecs, especialmente em MKV. Tente MP4 com vídeo H.264 e áudio AAC ou use um reprodutor do computador.'});
+ video.addEventListener('playing',()=>{status.textContent='Reproduzindo filme online.'});
+ video.addEventListener('waiting',()=>{status.textContent='Carregando vídeo…'});
+ video.addEventListener('loadedmetadata',()=>{status.textContent='Vídeo pronto. Use o botão de reprodução do player.'});
+ area.append(video,status);video.src=videoAtual;
+ const tentativa=video.play();
+ if(tentativa)tentativa.catch(erro=>{
+  if(erro.name==='NotAllowedError')status.textContent='Clique no botão de reprodução do player para começar.';
+  else if(erro.name!=='AbortError')status.textContent='Não foi possível iniciar a reprodução. Verifique se o navegador suporta os codecs deste MP4 ou MKV.';
+ });
+ area.scrollIntoView({block:'start',behavior:'smooth'});
+}
+function fecharModal(){document.getElementById('modal').classList.remove('show');document.getElementById('player')?.replaceChildren()}
+function fecharFora(e){if(e.target.id==='modal')fecharModal()}
+async function api(path,options={}){
+ const resposta=await fetch(path,{cache:'no-store',...options});
+ if(!resposta.ok){
+  let mensagem='Não foi possível concluir a operação. Tente novamente.';
+  try{const data=await resposta.json();if(data.error)mensagem=data.error}catch{}
+  const erro=new Error(mensagem);erro.status=resposta.status;throw erro;
+ }
+ if(resposta.status===204)return null;
+ return resposta.json();
+}
+function aguardar(ms,signal){
+ return new Promise((resolve,reject)=>{
+  const cancelar=()=>{clearTimeout(timer);reject(new DOMException('Envio cancelado.','AbortError'))};
+  const timer=setTimeout(()=>{signal.removeEventListener('abort',cancelar);resolve()},ms);
+  signal.addEventListener('abort',cancelar,{once:true});
+  if(signal.aborted)cancelar();
+ });
+}
+async function enviarComTentativas(path,options,signal){
+ for(let tentativa=0;tentativa<4;tentativa++){
+  if(signal.aborted)throw new DOMException('Envio cancelado.','AbortError');
+  const limite=new AbortController();
+  const cancelar=()=>limite.abort();signal.addEventListener('abort',cancelar,{once:true});
+  const timer=setTimeout(()=>limite.abort(),120000);
+  try{return await api(path,{...options,signal:limite.signal})}
+  catch(erro){
+   if(signal.aborted)throw new DOMException('Envio cancelado.','AbortError');
+   if((erro.status&&erro.status<500&&![408,429].includes(erro.status))||tentativa===3)throw erro;
+  }finally{clearTimeout(timer);signal.removeEventListener('abort',cancelar)}
+  await aguardar(1000*2**tentativa,signal);
+ }
+}
+function atualizarProgresso(bytes,total){
+ const percentual=Math.min(100,Math.floor(bytes/total*100));
+ document.getElementById('uploadProgresso').value=percentual;
+ document.getElementById('uploadPercentual').textContent=percentual+'%';
+}
+function bloquearFormulario(bloquear){
+ document.querySelectorAll('#formFilme input,#formFilme select,#formFilme textarea,#formFilme button').forEach(campo=>campo.disabled=bloquear);
+ document.getElementById('cancelarEnvio').disabled=false;
+}
+async function adicionarFilme(event){
+ event.preventDefault();if(controleEnvio||cancelando)return;
+ const mensagem=document.getElementById('uploadMensagem');
+ const titulo=document.getElementById('titulo').value.trim(),ano=Number(document.getElementById('ano').value),descricao=document.getElementById('descricao').value.trim(),genero=document.getElementById('genero').value;
+ const capa=document.getElementById('capa').files[0],arquivo=document.getElementById('video').files[0];
+ if(!titulo||!ano||!descricao){mensagem.textContent='Preencha título, ano e descrição.';return}
+ if(!arquivo){mensagem.textContent='Selecione o arquivo do filme para publicar.';return}
+ const erro=validarVideo(arquivo);if(erro){mensagem.textContent=erro;return}
+ if(capa&&(!['image/jpeg','image/png','image/webp','image/gif'].includes(capa.type)||capa.size>2000000)){
+  mensagem.textContent='Escolha uma capa JPG, PNG, WebP ou GIF de até 2 MB.';return;
+ }
+ const dados={titulo,ano,descricao,genero,filename:arquivo.name,size:arquivo.size};
+ const assinatura=JSON.stringify([dados,arquivo.lastModified,capa?[capa.name,capa.size,capa.lastModified]:null]);
+ const controle=new AbortController();controleEnvio=controle;
+ bloquearFormulario(true);document.getElementById('uploadPainel').hidden=false;
+ try{
+  if(envioAtual&&envioAtual.assinatura!==assinatura){
+   try{await api('/api/catalog/'+envioAtual.id,{method:'DELETE',signal:controle.signal})}catch(erro){if(erro.status!==404)throw erro}
+   envioAtual=null;
+  }
+  if(!envioAtual){
+   mensagem.textContent='Preparando o envio online…';
+   const inicio=await api('/api/catalog',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(dados),signal:controle.signal});
+   envioAtual={...inicio,assinatura,concluidas:new Set(),bytes:0,capaEnviada:false};
+  }
+  const envio=envioAtual;
+  atualizarProgresso(envio.bytes,arquivo.size);
+  if(capa&&!envio.capaEnviada){
+   mensagem.textContent='Enviando capa…';
+   await enviarComTentativas('/api/catalog/'+envio.id+'/cover',{method:'PUT',headers:{'Content-Type':capa.type},body:capa},controle.signal);
+   envio.capaEnviada=true;
+  }
+  let proxima=0,falhaPartes=null;
+  const enviarParte=async()=>{
+   while(proxima<envio.parts&&!falhaPartes){
+    if(controle.signal.aborted)throw new DOMException('Envio cancelado.','AbortError');
+    const indice=proxima++;if(envio.concluidas.has(indice))continue;
+    const parte=arquivo.slice(indice*envio.partSize,Math.min(arquivo.size,(indice+1)*envio.partSize));
+    try{await enviarComTentativas('/api/catalog/'+envio.id+'/parts/'+indice,{method:'PUT',headers:{'Content-Type':'application/octet-stream'},body:parte},controle.signal)}
+    catch(erro){falhaPartes=erro;throw erro}
+    envio.concluidas.add(indice);envio.bytes+=parte.size;
+    atualizarProgresso(envio.bytes,arquivo.size);
+    mensagem.textContent='Enviando filme: '+(envio.bytes/1000000).toLocaleString('pt-BR',{maximumFractionDigits:1})+' MB de '+(arquivo.size/1000000).toLocaleString('pt-BR',{maximumFractionDigits:1})+' MB. O filme aparece no catálogo ao terminar.';
+   }
+  };
+  const resultados=await Promise.allSettled([enviarParte(),enviarParte()]);
+  const falha=resultados.find(resultado=>resultado.status==='rejected');if(falha)throw falha.reason;
+  mensagem.textContent='Envio completo. Publicando no catálogo…';
+  const filme=await enviarComTentativas('/api/catalog/'+envio.id+'/publish',{method:'POST'},controle.signal);
+  envioAtual=null;
+  filmes=[filme,...filmes.filter(item=>item.id!==filme.id)];
+  document.getElementById('busca').value='';generoAtual='Todos';somenteFavoritos=false;
+  document.querySelectorAll('.chip').forEach(botao=>botao.classList.toggle('active',botao.textContent==='Todos'));
+  event.target.reset();renderizar();renderizarAdmin();
+  document.getElementById('catalogStatus').textContent='Filme publicado! Disponível no catálogo para todos os visitantes.';
+  mensagem.textContent='Filme publicado! O arquivo está online e pode ser assistido por outros visitantes.';
+  document.getElementById('uploadPainel').hidden=true;
+  abrirDetalhes(filme.id);
+ }catch(erro){
+  mensagem.textContent=controle.signal.aborted?'Envio cancelado. O filme não foi publicado.':erro.message+' Clique em TENTAR NOVAMENTE para continuar. Não recarregue a página.';
+  document.getElementById('publicarBotao').textContent='TENTAR NOVAMENTE';
+ }finally{
+  controleEnvio=null;if(!cancelando)bloquearFormulario(false);
+  if(!envioAtual)document.getElementById('publicarBotao').textContent='ENVIAR E PUBLICAR FILME';
+ }
+}
+async function cancelarEnvio(){
+ if(cancelando)return;cancelando=true;
+ const id=envioAtual?.id;
+ if(controleEnvio)controleEnvio.abort();
+ document.getElementById('cancelarEnvio').disabled=true;
+ try{
+  if(id){try{await api('/api/catalog/'+id,{method:'DELETE'})}catch(erro){if(erro.status!==404)throw erro}}
+  envioAtual=null;
+  document.getElementById('uploadPainel').hidden=true;
+  document.getElementById('uploadMensagem').textContent='Envio cancelado.';
+ }catch{document.getElementById('uploadMensagem').textContent='O envio foi interrompido. Não foi possível limpar o arquivo agora; tente cancelar novamente.'}
+ finally{cancelando=false;if(!controleEnvio)bloquearFormulario(false);if(!envioAtual)document.getElementById('publicarBotao').textContent='ENVIAR E PUBLICAR FILME'}
+}
+function renderizarAdmin(){
+ const lista=filmes.filter(f=>!String(f.id).startsWith('ex'));
+ document.getElementById('adminList').innerHTML=lista.length?lista.map(f=>`<div class="admin-item"><span>${escapar(f.titulo)} (${escapar(f.ano)}) · Online</span><button class="small-btn" onclick="excluirFilme('${f.id}',this)">Excluir</button></div>`).join(''):'<div class="muted">Nenhum filme publicado no catálogo ainda.</div>';
+}
+async function excluirFilme(id,botao){
+ if(!confirm('Excluir este filme do catálogo para todos os visitantes?'))return;
+ if(botao)botao.disabled=true;
+ try{
+  await api('/api/catalog/'+id,{method:'DELETE'});
+  const filme=filmes.find(f=>f.id===id);
+  if(videoAtual===filme?.video){fecharModal();videoAtual=null}
+  filmes=filmes.filter(f=>f.id!==id);renderizar();renderizarAdmin();
+  document.getElementById('catalogStatus').textContent='Filme excluído do catálogo.';
+ }catch(erro){alert(erro.message);if(botao)botao.disabled=false}
+}
+
+
+renderizar();renderizarAdmin();carregar();
+window.addEventListener('beforeunload',event=>{if(controleEnvio){event.preventDefault();event.returnValue=''}});
+</script>
+</body>
+</html>
